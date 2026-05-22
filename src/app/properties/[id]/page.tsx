@@ -4,13 +4,16 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { MapPin, Bed, Bath, Maximize, Calendar, Home, ChevronLeft, ChevronRight, Heart, Share2, MessageCircle, Phone, Shield, Sparkles, Check, ArrowLeft } from "lucide-react"
+import { MapPin, Bed, Bath, Maximize, Calendar, Home, ChevronLeft, ChevronRight, Heart, Share2, MessageCircle, Phone, Shield, Sparkles, Check, ArrowLeft, GitCompare } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { featuredProperties } from "@/lib/data"
 import { formatCurrency } from "@/lib/utils"
 import { notFound } from "next/navigation"
+import { MortgageCalculator } from "@/components/properties/mortgage-calculator"
+import { MapView } from "@/components/properties/map-view"
+import { PropertyComparison } from "@/components/properties/property-comparison"
 
 const features = [
   "Private Infinity Pool",
@@ -177,6 +180,14 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                     </Button>
                   </div>
 
+                  <div className="flex gap-2">
+                    <PropertyComparison properties={featuredProperties} />
+                    <button className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card border border-white/10 text-sm text-white/60 hover:text-white hover:border-gold/30 transition-all">
+                      <Heart className="w-4 h-4" />
+                      Save
+                    </button>
+                  </div>
+
                   <div className="pt-4 border-t border-white/10">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold/20 to-gold/10 flex items-center justify-center border border-gold/20">
@@ -190,7 +201,13 @@ export default function PropertyDetailPage({ params }: { params: { id: string } 
                   </div>
                 </div>
               </Card>
+
+              <MortgageCalculator price={property.price} />
             </div>
+          </div>
+
+          <div className="mt-8">
+            <MapView latitude={property.latitude} longitude={property.longitude} location={`${property.location}, ${property.city}, ${property.country}`} />
           </div>
         </div>
       </section>

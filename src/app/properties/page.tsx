@@ -4,7 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { Search, SlidersHorizontal, Bed, Bath, Maximize, MapPin, Grid3X3, List, Sparkles, ChevronDown } from "lucide-react"
+import { Search, SlidersHorizontal, Bed, Bath, Maximize, MapPin, Grid3X3, List, Sparkles, ChevronDown, GitCompare } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardImage, CardContent } from "@/components/ui/card"
@@ -132,6 +132,10 @@ export default function PropertiesPage() {
                     <input type="checkbox" id="sponsored" className="accent-gold" />
                     <label htmlFor="sponsored" className="text-sm text-white/60">Sponsored</label>
                   </div>
+                  <button className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white/50 hover:text-white hover:border-gold/30 transition-all">
+                    <GitCompare className="w-3.5 h-3.5" />
+                    Compare
+                  </button>
                   <div className="ml-auto flex items-center gap-2">
                     <div className="flex border border-white/10 rounded-xl overflow-hidden">
                       <button
