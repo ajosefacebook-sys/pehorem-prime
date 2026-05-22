@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  name         String
+  phone        String?
+  avatar       String?
+  password     String
+  role         String    @default("user")
+  isVerified   Boolean   @default(false)
+  company      String?
+  license      String?
+  bio          String?
+  rating       Float     @default(0)
+  reviewCount  Int       @default(0)
+  portfolio    String[]
+  socialLinks  Json?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  properties   Property[]
+  vehicles     Vehicle[]
+  inquiries    Inquiry[]
+  campaigns    AdCampaign[]
+  reviews      Review[]
+  savedListings SavedListing[]
+  notifications Notification[]
+}
+
+model Property {
+  id           String   @id @default(uuid())
+  title        String
+  slug         String   @unique
+  description  String
+  price        Float
+  currency     String   @default("USD")
+  type         String
+  status       String   @default("for-sale")
+  bedrooms     Int?
+  bathrooms    Int?
+  area         Float
+  areaUnit     String   @default("sqft")
+  location     String
+  city         String
+  state        String
+  country      String   @default("Nigeria")
+  latitude     Float?
+  longitude    Float?
+  images       String[]
+  video        String?
+  virtualTour  String?
+  features     String[]
+  amenities    String[]
+  yearBuilt    Int?
+  isFeatured   Boolean  @default(false)
+  isSponsored  Boolean  @default(false)
+  isApproved   Boolean  @default(false)
+  isPaused     Boolean  @default(false)
+  agentId      String?
+  agent        User?    @relation(fields: [agentId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  inquiries    Inquiry[] @relation("PropertyInquiries")
+}
+
+model Vehicle {
+  id           String   @id @default(uuid())
+  title        String
+  slug         String   @unique
+  description  String
+  price        Float
+  currency     String   @default("USD")
+  make         String
+  model        String
+  year         Int
+  mileage      Int
+  fuelType     String
+  transmission String
+  bodyType     String
+  condition    String
+  color        String
+  engineSize   String?
+  images       String[]
+  video        String?
+  features     String[]
+  location     String
+  isFeatured   Boolean  @default(false)
+  isSponsored  Boolean  @default(false)
+  isApproved   Boolean  @default(false)
+  isPaused     Boolean  @default(false)
+  dealerId     String?
+  dealer       User?    @relation(fields: [dealerId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  inquiries    Inquiry[] @relation("VehicleInquiries")
+}
+
+model Inquiry {
+  id          String    @id @default(uuid())
+  type        String
+  referenceId String
+  name        String
+  email       String
+  phone       String?
+  message     String
+  isRead      Boolean   @default(false)
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id])
+  property    Property? @relation("PropertyInquiries", fields: [propertyId], references: [id])
+  propertyId  String?
+  vehicle     Vehicle?  @relation("VehicleInquiries", fields: [vehicleId], references: [id])
+  vehicleId   String?
+  createdAt   DateTime  @default(now())
+}
+
+model AdCampaign {
+  id             String   @id @default(uuid())
+  type           String
+  referenceId    String
+  budget         Float
+  spent          Float    @default(0)
+  impressions    Int      @default(0)
+  clicks         Int      @default(0)
+  leads          Int      @default(0)
+  status         String   @default("active")
+  startDate      DateTime @default(now())
+  endDate        DateTime?
+  targetAudience String?
+  targetLocation String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model SavedListing {
+  id        String   @id @default(uuid())
+  type      String
+  listingId String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int
+  content   String
+  targetId  String
+  targetType String
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  type      String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model SiteSettings {
+  id        String   @id @default("default")
+  siteName  String   @default("PEHOREM PRIME")
+  tagline   String   @default("Luxury Properties & Premium Vehicles Marketplace")
+  whatsapp  String   @default("")
+  email     String   @default("")
+  phone     String   @default("")
+  address   String   @default("")
+  socialLinks Json?
+  heroSlides Json?
+  stats     Json?
+  updatedAt DateTime @updatedAt
+}
