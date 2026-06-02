@@ -23,7 +23,7 @@ export function TestimonialsSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: i * 0.1 }}
-            className="glass-card rounded-2xl p-6 sm:p-8 border border-white/5 hover:border-gold/20 transition-all duration-500"
+            className="glass-card relative rounded-2xl p-6 sm:p-8 border border-gold/20 hover:border-gold/40 transition-all duration-500"
           >
             <Quote className="w-8 h-8 text-gold/30 mb-4" />
             <p className="text-white/70 text-sm sm:text-base leading-relaxed mb-6">

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, ChevronDown, Search, User, Heart, Building2, Car, LogIn } from "lucide-react"
+import { Menu, X, Search, Building2, Car, LogIn, Gift } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -13,6 +13,7 @@ const navLinks = [
   { label: "Advertise", href: "/advertise", icon: Search },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
+  { label: "Affiliate", href: "/affiliate/register", icon: Gift },
 ]
 
 export function Navbar() {
@@ -37,13 +38,11 @@ export function Navbar() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg gold-gradient flex items-center justify-center">
-              <span className="text-black font-bold text-sm">P</span>
-            </div>
-            <div className="hidden sm:block">
-              <span className="text-lg font-bold text-white tracking-tight">PEHOREM</span>
-              <span className="text-lg font-bold text-gold ml-1">PRIME</span>
-            </div>
+            <img
+              src="/logo.png"
+              alt="PEHOREM PRIME"
+              className="h-10 sm:h-14 w-auto object-contain"
+            />
           </Link>
 
           <div className="hidden lg:flex items-center gap-1">
@@ -53,7 +52,7 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-white/60 hover:text-white rounded-xl hover:bg-white/5 transition-all duration-300"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-white/60 hover:text-gold rounded-xl hover:bg-gold/5 transition-all duration-300"
                 >
                   {Icon && <Icon className="w-4 h-4" />}
                   {link.label}
@@ -101,7 +100,7 @@ export function Navbar() {
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsMobileOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-white rounded-xl hover:bg-white/5 transition-all"
+                    className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-gold rounded-xl hover:bg-gold/5 transition-all"
                   >
                     {Icon && <Icon className="w-5 h-5" />}
                     <span className="font-medium">{link.label}</span>

@@ -184,3 +184,159 @@ model SiteSettings {
   stats     Json?
   updatedAt DateTime @updatedAt
 }
+
+model BlogCategory {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  slug      String     @unique
+  posts     BlogPost[]
+  createdAt DateTime   @default(now())
+}
+
+model BlogPost {
+  id           String       @id @default(uuid())
+  title        String
+  slug         String       @unique
+  excerpt      String?
+  content      String
+  coverImage   String?
+  author       String       @default("Admin")
+  published    Boolean      @default(false)
+  featured     Boolean      @default(false)
+  categoryId   String?
+  category     BlogCategory? @relation(fields: [categoryId], references: [id])
+  tags         String[]
+  metaTitle    String?
+  metaDesc     String?
+  keywords     String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model SiteContent {
+  id        String   @id @default("home")
+  key       String   @unique
+  title     String?
+  subtitle  String?
+  content   String?
+  images    String[]
+  metadata  Json?
+  published Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+}
+
+model Media {
+  id         String   @id @default(uuid())
+  name       String
+  url        String
+  type       String
+  size       Int?
+  width      Int?
+  height     Int?
+  alt        String?
+  folder     String   @default("general")
+  uploadedBy String?
+  createdAt  DateTime @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String
+  entity     String?
+  entityId   String?
+  adminId    String?
+  adminName  String?
+  details    Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+}
+
+enum AffiliateStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum CommissionTier {
+  STARTER
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+enum ReferralStatus {
+  PENDING
+  CONVERTED
+  CANCELLED
+}
+
+enum PayoutStatus {
+  PENDING
+  PROCESSING
+  PAID
+  REJECTED
+}
+
+model Affiliate {
+  id                String           @id @default(cuid())
+  email             String           @unique
+  password          String
+  firstName         String
+  lastName          String
+  phone             String
+  businessName      String
+  businessAddress   String
+  companyRegNumber  String
+  tin               String
+  bankName          String
+  bankAccountNumber String
+  bankAccountName   String
+  promotionMethod   String
+  referralCode      String           @unique
+  status            AffiliateStatus  @default(PENDING)
+  rejectionReason   String?
+  commissionTier    CommissionTier   @default(STARTER)
+  totalClicks       Int              @default(0)
+  totalReferrals    Int              @default(0)
+  totalEarnings     Float            @default(0)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  referrals         Referral[]
+  payouts           Payout[]
+}
+
+model Referral {
+  id               String         @id @default(cuid())
+  affiliateId      String
+  affiliate        Affiliate      @relation(fields: [affiliateId], references: [id])
+  referredEmail    String
+  referredName     String?
+  planName         String
+  planValue        Float
+  commissionRate   Float
+  commissionEarned Float
+  status           ReferralStatus @default(PENDING)
+  createdAt        DateTime       @default(now())
+  convertedAt      DateTime?
+}
+
+model Payout {
+  id          String       @id @default(cuid())
+  affiliateId String
+  affiliate   Affiliate    @relation(fields: [affiliateId], references: [id])
+  amount      Float
+  status      PayoutStatus @default(PENDING)
+  reference   String?
+  note        String?
+  createdAt   DateTime     @default(now())
+  paidAt      DateTime?
+}
+
+model AffiliateClick {
+  id           String   @id @default(cuid())
+  referralCode String
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+}

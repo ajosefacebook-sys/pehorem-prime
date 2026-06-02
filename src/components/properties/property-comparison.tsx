@@ -3,10 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Bed, Bath, Maximize, MapPin, GitCompare, Plus } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Card } from "@/components/ui/card"
+import { X, GitCompare } from "lucide-react"
 import { featuredProperties } from "@/lib/data"
 import { formatCurrency } from "@/lib/utils"
 import type { Property } from "@/types"
@@ -90,7 +87,7 @@ export function PropertyComparison({ properties = featuredProperties.slice(0, 4)
                         {selected.map((p) => (
                           <th key={p.id} className="text-center py-3 px-4 min-w-[200px]">
                             <div className="relative h-32 rounded-xl overflow-hidden mb-2">
-                              <Image src={p.images[0]} alt={p.title} fill className="object-cover" sizes="200px" />
+                              <Image src={p.images[0]} alt={p.title} fill className="object-cover" sizes="200px" onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.svg' }} />
                             </div>
                             <p className="text-white font-semibold text-sm">{p.title}</p>
                           </th>

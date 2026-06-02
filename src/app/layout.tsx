@@ -1,22 +1,20 @@
 import type { Metadata } from "next"
-import { Inter, Playfair_Display } from "next/font/google"
+import { Raleway, Cormorant_Garamond } from "next/font/google"
 import "./globals.css"
-import { Navbar } from "@/components/layout/navbar"
-import { Footer } from "@/components/layout/footer"
-import { FloatingWhatsApp, MobileWhatsApp } from "@/components/layout/whatsapp"
-import { Chatbot, ChatbotFAB } from "@/components/chatbot/chatbot"
 
-const inter = Inter({
-  variable: "--font-inter",
+const raleway = Raleway({
+  variable: "--font-body",
   subsets: ["latin"],
 })
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-heading",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://pehorem-prime.vercel.app"),
   title: "PEHOREM PRIME | Luxury Properties & Premium Vehicles Marketplace",
   description:
     "The world's most sophisticated AI-powered marketplace for luxury properties, premium vehicles, and elite investments. Discover extraordinary real estate and exclusive automobiles.",
@@ -32,10 +30,15 @@ export const metadata: Metadata = {
     "car marketplace",
     "PEHOREM PRIME",
   ],
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
   openGraph: {
     title: "PEHOREM PRIME | Luxury Properties & Premium Vehicles Marketplace",
     description: "AI-Powered Global Luxury Marketplace",
     type: "website",
+    images: [{ url: "/logo.png", width: 512, height: 512 }],
   },
 }
 
@@ -47,20 +50,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${playfair.variable}`}
+      className={`${raleway.variable} ${cormorant.variable}`}
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="min-h-screen bg-dark text-white antialiased">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <FloatingWhatsApp />
-        <MobileWhatsApp />
-        <Chatbot />
-        <ChatbotFAB />
+        {children}
       </body>
     </html>
   )

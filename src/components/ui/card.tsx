@@ -10,8 +10,8 @@ export function Card({ className, children, hover = true }: CardProps) {
   return (
     <div
       className={cn(
-        "glass-card rounded-2xl overflow-hidden transition-all duration-500",
-        hover && "hover:border-gold/30 hover:shadow-lg hover:shadow-gold/5 hover:-translate-y-1",
+        "group glass-card relative rounded-2xl overflow-hidden transition-all duration-500",
+        hover && "hover:border-gold/60 hover:shadow-lg hover:shadow-gold/10 hover:-translate-y-1",
         className
       )}
     >

@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PEHOREM PRIME
+
+**Luxury Properties & Premium Vehicles Marketplace**
+
+AI-powered global marketplace for luxury real estate and premium automobiles. Built with Next.js 16, TypeScript, Tailwind CSS v4, Framer Motion, and Prisma ORM.
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (Turbopack)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4
+- **Animation:** Framer Motion
+- **Database:** PostgreSQL (Railway)
+- **ORM:** Prisma 6
+- **Icons:** Lucide React
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Cinematic luxury homepage with video backgrounds
+- Property marketplace with filters, comparison, mortgage calculator
+- Vehicle marketplace with specs and test-drive booking
+- AI-powered chatbot with WhatsApp fallback
+- Floating WhatsApp support (draggable)
+- AI Advertisement Boosting system
+- User dashboard with analytics
+- Admin panel with CMS
+- Agent & Dealer profiles
+- Mortgage calculator
+- Map integration
+- Property comparison tool
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Scripts
 
-## Learn More
+| Command | Description |
+|---|---|
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npx prisma db push` | Sync database schema |
+| `npx prisma generate` | Generate Prisma client |
 
-To learn more about Next.js, take a look at the following resources:
+## Environment Variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `JWT_SECRET` | JWT signing secret |
+| `NEXT_PUBLIC_SITE_URL` | Public site URL |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | WhatsApp support number |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/           # Pages and API routes
+├── components/    # React components
+│   ├── ui/        # Reusable UI
+│   ├── layout/    # Navbar, Footer, WhatsApp
+│   ├── home/      # Homepage sections
+│   ├── properties/# Property components
+│   ├── vehicles/  # Vehicle components
+│   ├── chatbot/   # AI Chatbot
+│   └── ads/       # Ad components
+├── lib/           # Utilities and Prisma client
+├── types/         # TypeScript types
+└── hooks/         # Custom hooks
+```

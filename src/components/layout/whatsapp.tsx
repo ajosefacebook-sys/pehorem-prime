@@ -1,40 +1,36 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { MessageCircle, X, ChevronDown } from "lucide-react"
+import { MessageCircle, X } from "lucide-react"
 
 const WHATSAPP_NUMBER = "234800746736"
 const DEFAULT_MESSAGE = "Hello! I'm interested in learning more about PEHOREM PRIME luxury marketplace."
 
 export function FloatingWhatsApp() {
   const [isOpen, setIsOpen] = useState(false)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [position, setPosition] = useState(() => ({
+    x: typeof window !== "undefined" ? window.innerWidth - 100 : 0,
+    y: typeof window !== "undefined" ? window.innerHeight - 100 : 0,
+  }))
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const buttonRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    setPosition({
-      x: typeof window !== "undefined" ? window.innerWidth - 100 : 0,
-      y: typeof window !== "undefined" ? window.innerHeight - 100 : 0,
-    })
-  }, [])
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true)
     setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y })
   }
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging) return
     setPosition({
       x: e.clientX - dragStart.x,
       y: e.clientY - dragStart.y,
     })
-  }
+  }, [isDragging, dragStart])
 
-  const handleMouseUp = () => setIsDragging(false)
+  const handleMouseUp = useCallback(() => setIsDragging(false), [])
 
   useEffect(() => {
     if (isDragging) {
@@ -45,7 +41,7 @@ export function FloatingWhatsApp() {
         window.removeEventListener("mouseup", handleMouseUp)
       }
     }
-  }, [isDragging, dragStart])
+  }, [isDragging, handleMouseMove, handleMouseUp])
 
   const openWhatsApp = () => {
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(DEFAULT_MESSAGE)}`

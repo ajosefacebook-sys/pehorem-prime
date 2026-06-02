@@ -11,14 +11,6 @@ interface MapViewProps {
 export function MapView({ latitude, longitude, location }: MapViewProps) {
   const hasCoords = latitude && longitude
 
-  const mapEmbedUrl = hasCoords
-    ? `https://www.google.com/maps/embed/v1/view?key=&center=${latitude},${longitude}&zoom=15&maptype=satellite`
-    : null
-
-  const mapImageUrl = hasCoords
-    ? `https://api.mapbox.com/styles/v1/mapbox/dark-v11/static/pin-l+da4f37(${longitude},${latitude})/${longitude},${latitude},15,0/800x400@2x?access_token=pk.eyJ1IjoicGVob3JlbSIsImEiOiJjbHZ4eHh4eHh4eHh4eHh4eHh4eHh4eHh4In0.xxxxx`
-    : null
-
   return (
     <div className="glass-card rounded-2xl overflow-hidden border border-white/10">
       <div className="p-5 pb-3">

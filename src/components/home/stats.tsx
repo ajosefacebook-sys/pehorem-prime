@@ -24,11 +24,11 @@ export function StatsSection() {
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="text-center"
             >
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gold/10 border border-gold/20 mb-4">
-                <Icon className="w-5 h-5 text-gold" />
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gold/10 border border-gold/30 mb-4 gold-glow-sm">
+                <Icon className="w-6 h-6 text-gold" />
               </div>
-              <p className="text-3xl sm:text-4xl font-bold text-white mb-1">{stat.value}</p>
-              <p className="text-sm text-white/40">{stat.label}</p>
+              <p className="text-3xl sm:text-4xl font-display font-bold text-gold mb-1">{stat.value}</p>
+              <p className="text-sm text-white/50 uppercase tracking-[0.1em]">{stat.label}</p>
             </motion.div>
           )
         })}

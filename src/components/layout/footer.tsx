@@ -1,5 +1,8 @@
+"use client"
+
 import Link from "next/link"
-import { Building2, Car, Phone, Mail, MapPin, Globe, ArrowUpRight } from "lucide-react"
+import { useEffect, useState } from "react"
+import { Phone, Mail, MapPin, Globe, ArrowUpRight, Shield } from "lucide-react"
 
 const footerLinks = {
   marketplace: [
@@ -15,32 +18,47 @@ const footerLinks = {
     { label: "Contact", href: "/contact" },
     { label: "FAQs", href: "/faq" },
     { label: "Blog", href: "/blog" },
-    { label: "Careers", href: "/careers" },
-    { label: "Press", href: "/press" },
+  ],
+  partners: [
+    { label: "Affiliate Program", href: "/affiliate/register" },
+    { label: "Advertise", href: "/advertise" },
+    { label: "Partner With Us", href: "/contact" },
   ],
   support: [
-    { label: "Help Center", href: "/help" },
-    { label: "Privacy Policy", href: "/privacy" },
-    { label: "Terms of Service", href: "/terms" },
-    { label: "Cookie Policy", href: "/cookies" },
-    { label: "Report Issue", href: "/report" },
+    { label: "Help Center", href: "/faq" },
+    { label: "Privacy Policy", href: "/faq" },
+    { label: "Terms of Service", href: "/faq" },
+    { label: "Cookie Policy", href: "/faq" },
+    { label: "Report Issue", href: "/contact" },
   ],
 }
 
 export function Footer() {
+  const [adminHref, setAdminHref] = useState("/admin/login")
+
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]))
+        if (payload.role === "admin" || payload.role === "superadmin") {
+          setAdminHref("/admin")
+        }
+      } catch {}
+    }
+  }, [])
+
   return (
     <footer className="bg-dark-100 border-t border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 lg:gap-12">
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-6">
-              <div className="w-8 h-8 rounded-lg gold-gradient flex items-center justify-center">
-                <span className="text-black font-bold text-sm">P</span>
-              </div>
-              <div>
-                <span className="text-lg font-bold text-white">PEHOREM</span>
-                <span className="text-lg font-bold text-gold">PRIME</span>
-              </div>
+            <Link href="/" className="block mb-6">
+              <img
+                src="/logo.png"
+                alt="PEHOREM PRIME"
+                className="h-12 sm:h-14 w-auto object-contain"
+              />
             </Link>
             <p className="text-white/40 text-sm leading-relaxed mb-6 max-w-xs">
               The world&apos;s most sophisticated marketplace for luxury properties and premium vehicles. Powered by AI.
@@ -87,6 +105,20 @@ export function Footer() {
           </div>
 
           <div>
+            <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Partners</h3>
+            <ul className="space-y-3">
+              {footerLinks.partners.map((link) => (
+                <li key={link.label}>
+                  <Link href={link.href} className="text-white/40 hover:text-gold text-sm transition-colors flex items-center gap-1 group">
+                    {link.label}
+                    <ArrowUpRight className="w-3 h-3 opacity-0 -translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
             <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Contact</h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-white/40 text-sm">
@@ -106,7 +138,14 @@ export function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-white/30 text-xs">&copy; {new Date().getFullYear()} PEHOREM PRIME. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <p className="text-white/30 text-xs">&copy; {new Date().getFullYear()} PEHOREM PRIME. All rights reserved.</p>
+            <span className="text-white/10 text-xs hidden sm:inline">|</span>
+            <Link href={adminHref} className="text-white/20 hover:text-gold/60 text-xs transition-colors flex items-center gap-1">
+              <Shield className="w-3 h-3" />
+              Admin
+            </Link>
+          </div>
           <p className="text-white/20 text-xs">Luxury Properties &amp; Premium Vehicles Marketplace</p>
         </div>
       </div>

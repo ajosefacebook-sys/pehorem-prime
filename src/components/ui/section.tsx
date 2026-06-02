@@ -12,12 +12,8 @@ export function Section({ children, className, id, variant = "default" }: Sectio
     <section
       id={id}
       className={cn(
-        "py-16 sm:py-20 lg:py-28 section-padding",
-        {
-          "bg-dark": variant === "default",
-          "bg-dark-100": variant === "dark",
-          "bg-dark relative": variant === "glass",
-        },
+        "py-16 sm:py-20 lg:py-28 section-padding relative",
+        variant === "dark" ? "bg-dark-100" : "bg-dark",
         className
       )}
     >
@@ -56,19 +52,24 @@ export function SectionHeader({
       )}
     >
       {gold && (
-        <div className="inline-flex items-center gap-2 mb-4">
-          <div className="w-8 h-px bg-gold/60" />
-          <span className="text-xs uppercase tracking-[0.2em] text-gold font-medium">
+        <div className="inline-flex items-center gap-3 mb-5">
+          <div className="w-10 h-0.5 bg-gold" />
+          <span className="text-xs uppercase tracking-[0.25em] text-gold font-semibold">
             Premium Selection
           </span>
-          <div className="w-8 h-px bg-gold/60" />
+          <div className="w-10 h-0.5 bg-gold" />
         </div>
       )}
-      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white leading-tight">
+      <h2
+        className={cn(
+          "section-heading-gold text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white leading-tight tracking-wide",
+          align === "left" && "section-heading-gold-left"
+        )}
+      >
         {title}
       </h2>
       {subtitle && (
-        <p className="mt-4 text-white/50 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+        <p className="mt-8 text-white/50 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
           {subtitle}
         </p>
       )}

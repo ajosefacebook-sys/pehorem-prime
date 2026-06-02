@@ -17,14 +17,14 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(
           "relative inline-flex items-center justify-center font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed",
           {
-            "bg-gradient-to-r from-gold-dark to-gold text-black hover:from-gold hover:to-gold-dark hover:shadow-lg hover:shadow-gold/20":
+            "bg-gradient-to-r from-gold-dark to-gold text-black hover:from-gold hover:to-gold-dark hover:shadow-lg hover:shadow-gold/30 hover:scale-[1.02]":
               variant === "primary",
-            "border border-gold/40 text-gold hover:bg-gold/10 hover:border-gold/60":
+            "border border-gold/40 text-gold hover:bg-gold/10 hover:border-gold/80 hover:shadow-lg hover:shadow-gold/10":
               variant === "outline",
-            "text-white/70 hover:text-white hover:bg-white/5": variant === "ghost",
-            "gold-gradient text-black font-semibold hover:shadow-xl hover:shadow-gold/30 gold-glow":
+            "text-white/60 hover:text-gold hover:bg-gold/5": variant === "ghost",
+            "gold-gradient text-black font-semibold hover:shadow-xl hover:shadow-gold/40 gold-glow hover:scale-[1.02]":
               variant === "gold",
-            "bg-dark-200 text-white border border-white/10 hover:bg-dark-300 hover:border-white/20":
+            "bg-dark-200 text-white border border-gold/20 hover:bg-gold/10 hover:border-gold/40 hover:text-gold":
               variant === "dark",
           },
           {
