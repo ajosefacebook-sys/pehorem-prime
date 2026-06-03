@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import {
   LayoutDashboard, Users, Building2, Car, FileText, MessageSquare,
   Image, Settings, Shield, BarChart3, LogOut, Menu, X, ChevronDown,
-  Gift
+  Gift, TrendingUp
 } from "lucide-react"
 import { useState, useEffect } from "react"
 
@@ -21,6 +21,7 @@ const navItems = [
   },
   { href: "/admin/blog", label: "Blog", icon: FileText },
   { href: "/admin/inquiries", label: "Inquiries", icon: MessageSquare, badge: "unread" },
+  { href: "/admin/boosts", label: "Boost Listings", icon: TrendingUp, badge: "boost" },
   { href: "/admin/media", label: "Media", icon: Image },
   { href: "/admin/affiliates", label: "Affiliates", icon: Gift },
   { href: "/admin/reports", label: "Reports", icon: BarChart3 },
@@ -32,15 +33,19 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
   const [expanded, setExpanded] = useState<string | null>(null)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [pendingBoosts, setPendingBoosts] = useState(0)
 
   useEffect(() => {
     const token = localStorage.getItem("token")
     if (!token) return
-    fetch("/api/admin/inquiries?read=unread&limit=1", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const headers = { Authorization: `Bearer ${token}` }
+    fetch("/api/admin/inquiries?read=unread&limit=1", { headers })
       .then((r) => r.json())
       .then((data) => setUnreadCount(data.total || 0))
+      .catch(() => {})
+    fetch("/api/admin/boosts?status=pending&limit=1", { headers })
+      .then((r) => r.json())
+      .then((data) => setPendingBoosts(data.total || 0))
       .catch(() => {})
   }, [pathname])
 
@@ -111,6 +116,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
             )
           }
           const isInquiries = item.href === "/admin/inquiries"
+          const isBoosts = item.href === "/admin/boosts"
           return (
             <Link
               key={item.href}
@@ -126,6 +132,11 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
               {isInquiries && unreadCount > 0 && (
                 <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-gold text-[10px] font-bold text-dark-200 flex items-center justify-center">
                   {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
+              {isBoosts && pendingBoosts > 0 && (
+                <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-amber-500 text-[10px] font-bold text-dark-200 flex items-center justify-center">
+                  {pendingBoosts > 99 ? "99+" : pendingBoosts}
                 </span>
               )}
             </Link>

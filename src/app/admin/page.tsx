@@ -5,7 +5,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import {
   Building2, Users, Car, MessageSquare, CheckCircle, Clock, TrendingUp,
-  DollarSign, FileText, Image, Shield, ArrowRight, Home, Mail
+  DollarSign, FileText, Image, Shield, ArrowRight, Home, Mail, Zap
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
@@ -20,6 +20,7 @@ interface DashboardData {
     totalListings: number; pendingApprovals: number
     vehicleInquiries: number; propertyInquiries: number
     newInquiries: number; contactedInquiries: number; pendingInquiries: number; closedInquiries: number
+    totalBoosts: number; activeBoosts: number; pendingBoosts: number; expiredBoosts: number; boostRevenue: number
   }
   recentProperties: any[]
   recentVehicles: any[]
@@ -157,6 +158,36 @@ export default function AdminDashboard() {
                   <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gold" />
                 </div>
                 <p className="text-base sm:text-xl font-bold text-white">{stat.value.toLocaleString()}</p>
+                <p className="text-[9px] sm:text-[11px] text-white/40">{stat.label}</p>
+              </div>
+            </motion.div>
+          )
+        })}
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
+        {[
+          { label: "Total Boost Requests", value: stats?.totalBoosts || 0, icon: Zap, color: "from-yellow-500/20" },
+          { label: "Active Boosts", value: stats?.activeBoosts || 0, icon: TrendingUp, color: "from-green-500/20" },
+          { label: "Pending Approvals", value: stats?.pendingBoosts || 0, icon: Clock, color: "from-amber-500/20" },
+          { label: "Expired", value: stats?.expiredBoosts || 0, icon: Clock, color: "from-gray-500/20" },
+          { label: "Revenue", value: formatCurrency(stats?.boostRevenue || 0, "USD"), icon: DollarSign, color: "from-gold/20" },
+        ].map((stat, i) => {
+          const Icon = stat.icon
+          return (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-white/5 relative overflow-hidden"
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} to-transparent opacity-20`} />
+              <div className="relative">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-gold/10 flex items-center justify-center mb-1.5 sm:mb-2">
+                  <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gold" />
+                </div>
+                <p className="text-base sm:text-xl font-bold text-white">{stat.value.toLocaleString?.() || stat.value}</p>
                 <p className="text-[9px] sm:text-[11px] text-white/40">{stat.label}</p>
               </div>
             </motion.div>

@@ -23,6 +23,7 @@ export async function GET(request: Request) {
     featuredPropertiesCount, featuredVehiclesCount,
     vehicleInquiries, propertyInquiries,
     newInquiries, contactedInquiries, pendingInquiries, closedInquiries,
+    totalBoosts, activeBoosts, pendingBoosts, expiredBoosts, boostRevenue,
   ] = await Promise.all([
     prisma.property.count({ where: { isApproved: false } }),
     prisma.vehicle.count({ where: { isApproved: false } }),
@@ -34,6 +35,11 @@ export async function GET(request: Request) {
     prisma.inquiry.count({ where: { status: "contacted" } }),
     prisma.inquiry.count({ where: { status: "pending" } }),
     prisma.inquiry.count({ where: { status: "closed" } }),
+    prisma.boost.count(),
+    prisma.boost.count({ where: { approvalStatus: "approved", endDate: { gte: new Date() } } }),
+    prisma.boost.count({ where: { approvalStatus: "pending" } }),
+    prisma.boost.count({ where: { endDate: { lt: new Date() }, approvalStatus: "approved" } }),
+    prisma.boost.aggregate({ where: { paymentStatus: "verified" }, _sum: { amount: true } }),
   ])
 
   const recentProperties = await prisma.property.findMany({
@@ -75,6 +81,8 @@ export async function GET(request: Request) {
       pendingApprovals: pendingProperties + pendingVehicles,
       vehicleInquiries, propertyInquiries,
       newInquiries, contactedInquiries, pendingInquiries, closedInquiries,
+      totalBoosts, activeBoosts, pendingBoosts, expiredBoosts,
+      boostRevenue: boostRevenue._sum.amount || 0,
     },
     recentProperties,
     recentVehicles,

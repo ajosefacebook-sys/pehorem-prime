@@ -32,6 +32,8 @@ model User {
   reviews      Review[]
   savedListings SavedListing[]
   notifications Notification[]
+  boosts       Boost[]   @relation("UserBoosts")
+  boostApprovals Boost[] @relation("BoostApprovals")
 }
 
 model Property {
@@ -100,6 +102,31 @@ model Vehicle {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   inquiries    Inquiry[] @relation("VehicleInquiries")
+}
+
+model Boost {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation("UserBoosts", fields: [userId], references: [id])
+  listingId       String
+  listingType     String
+  planName        String
+  amount          Float
+  paymentReference String?
+  paymentStatus   String    @default("pending")
+  approvalStatus  String    @default("pending")
+  approvedBy      String?
+  approvedByUser  User?     @relation("BoostApprovals", fields: [approvedBy], references: [id])
+  approvedAt      DateTime?
+  startDate       DateTime?
+  endDate         DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([listingId, listingType])
+  @@index([approvalStatus])
+  @@index([paymentStatus])
 }
 
 model Inquiry {
