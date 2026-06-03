@@ -1,10 +1,12 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { Sparkles, Target, TrendingUp, Globe, Check, ChevronRight, Eye, MousePointerClick } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Section, SectionHeader } from "@/components/ui/section"
+import { BoostModal } from "@/components/boost/boost-modal"
 
 const features = [
   {
@@ -82,8 +84,10 @@ const plans = [
 ]
 
 export default function AdvertisePage() {
+  const [boostModalOpen, setBoostModalOpen] = useState(false)
   return (
     <>
+      <BoostModal isOpen={boostModalOpen} onClose={() => setBoostModalOpen(false)} />
       <section className="relative pt-28 pb-16 sm:pt-32 sm:pb-20 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-gold/10 via-transparent to-transparent" />
@@ -180,7 +184,7 @@ export default function AdvertisePage() {
                   </li>
                 ))}
               </ul>
-              <Button variant={plan.popular ? "primary" : "outline"} size="lg" className="w-full">
+              <Button variant={plan.popular ? "primary" : "outline"} size="lg" className="w-full" onClick={() => setBoostModalOpen(true)}>
                 Get Started
                 <ChevronRight className="w-4 h-4 ml-1" />
               </Button>

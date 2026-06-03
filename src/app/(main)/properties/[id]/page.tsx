@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Bed, Bath, Maximize, MapPin, ChevronLeft, ChevronRight, Heart, Share2, Sparkles, Check, ArrowLeft, Building2, Calendar, Home } from "lucide-react"
+import { Bed, Bath, Maximize, MapPin, ChevronLeft, ChevronRight, Heart, Share2, Sparkles, Check, ArrowLeft, Building2, Calendar, Home, TrendingUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
@@ -11,11 +11,13 @@ import { Input } from "@/components/ui/input"
 import { featuredProperties } from "@/lib/data"
 import { formatCurrency } from "@/lib/utils"
 import { notFound } from "next/navigation"
+import { BoostModal } from "@/components/boost/boost-modal"
 
 export default function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const property = featuredProperties.find((p) => p.slug === id)
   if (!property) notFound()
+  const [boostModalOpen, setBoostModalOpen] = useState(false)
 
   const [currentImage, setCurrentImage] = useState(0)
   const [imgError, setImgError] = useState(false)
@@ -244,6 +246,10 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                       <Home className="w-4 h-4 mr-2" />
                       Schedule Viewing
                     </Button>
+                    <Button variant="gold" size="lg" className="w-full" onClick={() => setBoostModalOpen(true)}>
+                      <TrendingUp className="w-4 h-4 mr-2" />
+                      Boost Listing
+                    </Button>
                   </div>
                 </div>
               </Card>
@@ -313,6 +319,13 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
             </div>
           </div>
         </div>
+        <BoostModal
+          isOpen={boostModalOpen}
+          onClose={() => setBoostModalOpen(false)}
+          listingId={property.slug}
+          listingType="property"
+          listingTitle={property.title}
+        />
       </section>
     </>
   )

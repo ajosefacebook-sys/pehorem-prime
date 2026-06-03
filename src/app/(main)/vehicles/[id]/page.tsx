@@ -3,7 +3,7 @@
 import { useState, useEffect, use } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Gauge, Fuel, Calendar, MapPin, ChevronLeft, ChevronRight, Heart, Share2, MessageCircle, Phone, Sparkles, Check, ArrowLeft, Cog } from "lucide-react"
+import { Gauge, Fuel, Calendar, MapPin, ChevronLeft, ChevronRight, Heart, Share2, MessageCircle, Phone, Sparkles, Check, ArrowLeft, Cog, TrendingUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { featuredVehicles } from "@/lib/data"
 import { formatCurrency } from "@/lib/utils"
 import { notFound } from "next/navigation"
+import { BoostModal } from "@/components/boost/boost-modal"
 
 const vehicleFeatures = [
   "Massage Seats",
@@ -27,6 +28,7 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
   const { id } = use(params)
   const vehicle = featuredVehicles.find((v) => v.slug === id)
   if (!vehicle) notFound()
+  const [boostModalOpen, setBoostModalOpen] = useState(false)
 
   const [currentImage, setCurrentImage] = useState(0)
   const [imgError, setImgError] = useState(false)
@@ -257,6 +259,10 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                       <Calendar className="w-4 h-4 mr-2" />
                       Schedule Test Drive
                     </Button>
+                    <Button variant="gold" size="lg" className="w-full" onClick={() => setBoostModalOpen(true)}>
+                      <TrendingUp className="w-4 h-4 mr-2" />
+                      Boost Listing
+                    </Button>
                   </div>
 
                   <div className="pt-4 border-t border-white/10">
@@ -325,6 +331,13 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
       </section>
+      <BoostModal
+        isOpen={boostModalOpen}
+        onClose={() => setBoostModalOpen(false)}
+        listingId={vehicle.slug}
+        listingType="vehicle"
+        listingTitle={vehicle.title}
+      />
     </>
   )
 }
