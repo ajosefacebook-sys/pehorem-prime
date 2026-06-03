@@ -33,6 +33,7 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" })
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState("")
 
   useEffect(() => {
     document.title = `${vehicle.title} | PEHOREM PRIME`
@@ -44,6 +45,33 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
     }
     meta.setAttribute("content", vehicle.description.slice(0, 160))
   }, [vehicle])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    setSubmitting(true)
+    try {
+      const res = await fetch("/api/inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "vehicle",
+          referenceId: vehicle.slug,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message,
+        }),
+      })
+      if (!res.ok) throw new Error("Failed to submit enquiry")
+      setSubmitted(true)
+      setFormData({ name: "", email: "", phone: "", message: "" })
+    } catch {
+      setError("Something went wrong. Please try again.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <>
@@ -248,7 +276,7 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                         </button>
                       </div>
                     ) : (
-                      <form onSubmit={async (e) => { e.preventDefault(); setSubmitting(true); await new Promise((r) => setTimeout(r, 1000)); setSubmitted(true); setFormData({ name: "", email: "", phone: "", message: "" }); setSubmitting(false); }} className="space-y-3">
+                      <form onSubmit={handleSubmit} className="space-y-3">
                         <Input
                           label="Full Name"
                           type="text"
@@ -284,6 +312,7 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                             className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-gold/40 resize-none"
                           />
                         </div>
+                        {error && <p className="text-red-400 text-xs">{error}</p>}
                         <Button type="submit" variant="gold" size="lg" className="w-full" disabled={submitting}>
                           {submitting ? "Sending..." : "Submit Enquiry"}
                         </Button>

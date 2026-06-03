@@ -1,13 +1,46 @@
 "use client"
 
+import { useState } from "react"
 import { motion } from "framer-motion"
-import { MapPin, Phone, Mail, MessageCircle, Clock, Send } from "lucide-react"
+import { MapPin, Phone, Mail, MessageCircle, Clock, Send, Check } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Section } from "@/components/ui/section"
 
 export default function ContactPage() {
+  const [formData, setFormData] = useState({ firstName: "", lastName: "", email: "", phone: "", message: "" })
+  const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState("")
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    setSubmitting(true)
+    try {
+      const name = `${formData.firstName} ${formData.lastName}`.trim()
+      const res = await fetch("/api/inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "contact",
+          name,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message,
+        }),
+      })
+      if (!res.ok) throw new Error("Failed to send message")
+      setSubmitted(true)
+      setFormData({ firstName: "", lastName: "", email: "", phone: "", message: "" })
+    } catch {
+      setError("Something went wrong. Please try again.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
     <>
       <section className="relative pt-28 pb-16 sm:pt-32 sm:pb-20 overflow-hidden">
@@ -70,26 +103,66 @@ export default function ContactPage() {
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
             <div className="glass-card rounded-2xl p-6 sm:p-8 border border-white/10">
               <h2 className="text-2xl font-display font-bold text-white mb-6">Send a Message</h2>
-              <form className="space-y-5">
-                <div className="grid grid-cols-2 gap-4">
-                  <Input label="First Name" type="text" placeholder="John" />
-                  <Input label="Last Name" type="text" placeholder="Doe" />
+              {submitted ? (
+                <div className="bg-gold/10 border border-gold/20 rounded-xl p-6 text-center">
+                  <Check className="w-10 h-10 text-gold mx-auto mb-3" />
+                  <p className="text-white font-medium text-lg">Thank you, {formData.firstName || "Guest"}!</p>
+                  <p className="text-white/60 text-sm mt-2">
+                    Your message has been received. We will respond within 24 hours.
+                  </p>
+                  <button
+                    onClick={() => setSubmitted(false)}
+                    className="mt-4 text-xs text-gold hover:text-gold-light transition-colors"
+                  >
+                    Send Another Message
+                  </button>
                 </div>
-                <Input label="Email Address" type="email" placeholder="you@example.com" />
-                <Input label="Phone Number" type="tel" placeholder="+234 800 000 0000" />
-                <div>
-                  <label className="block text-sm font-medium text-white/60 mb-2">Message</label>
-                  <textarea
-                    rows={4}
-                    placeholder="How can we help you?"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/50 transition-all resize-none"
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      label="First Name" type="text" placeholder="John"
+                      value={formData.firstName}
+                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                      required
+                    />
+                    <Input
+                      label="Last Name" type="text" placeholder="Doe"
+                      value={formData.lastName}
+                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <Input
+                    label="Email Address" type="email" placeholder="you@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
                   />
-                </div>
-                <Button variant="primary" size="lg" className="w-full">
-                  <Send className="w-4 h-4 mr-2" />
-                  Send Message
-                </Button>
-              </form>
+                  <Input
+                    label="Phone Number" type="tel" placeholder="+234 800 000 0000"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    required
+                  />
+                  <div>
+                    <label className="block text-sm font-medium text-white/60 mb-2">Message</label>
+                    <textarea
+                      rows={4}
+                      placeholder="How can we help you?"
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      required
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-gold/30 focus:border-gold/50 transition-all resize-none"
+                    />
+                  </div>
+                  {error && <p className="text-red-400 text-xs">{error}</p>}
+                  <Button type="submit" variant="primary" size="lg" className="w-full" disabled={submitting}>
+                    <Send className="w-4 h-4 mr-2" />
+                    {submitting ? "Sending..." : "Send Message"}
+                  </Button>
+                </form>
+              )}
             </div>
           </motion.div>
         </div>

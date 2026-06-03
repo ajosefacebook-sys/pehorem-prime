@@ -22,6 +22,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" })
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState("")
 
   useEffect(() => {
     document.title = `${property.title} | PEHOREM PRIME`
@@ -36,11 +37,29 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
     setSubmitting(true)
-    await new Promise((r) => setTimeout(r, 1000))
-    setSubmitted(true)
-    setFormData({ name: "", email: "", phone: "", message: "" })
-    setSubmitting(false)
+    try {
+      const res = await fetch("/api/inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "property",
+          referenceId: property.slug,
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          message: formData.message,
+        }),
+      })
+      if (!res.ok) throw new Error("Failed to submit enquiry")
+      setSubmitted(true)
+      setFormData({ name: "", email: "", phone: "", message: "" })
+    } catch {
+      setError("Something went wrong. Please try again.")
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -283,6 +302,7 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
                           className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-gold/40 resize-none"
                         />
                       </div>
+                      {error && <p className="text-red-400 text-xs">{error}</p>}
                       <Button type="submit" variant="gold" size="lg" className="w-full" disabled={submitting}>
                         {submitting ? "Sending..." : "Submit Enquiry"}
                       </Button>

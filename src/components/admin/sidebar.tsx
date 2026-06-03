@@ -8,7 +8,7 @@ import {
   Image, Settings, Shield, BarChart3, LogOut, Menu, X, ChevronDown,
   Gift
 } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -20,7 +20,7 @@ const navItems = [
     ]
   },
   { href: "/admin/blog", label: "Blog", icon: FileText },
-  { href: "/admin/inquiries", label: "Inquiries", icon: MessageSquare },
+  { href: "/admin/inquiries", label: "Inquiries", icon: MessageSquare, badge: "unread" },
   { href: "/admin/media", label: "Media", icon: Image },
   { href: "/admin/affiliates", label: "Affiliates", icon: Gift },
   { href: "/admin/reports", label: "Reports", icon: BarChart3 },
@@ -31,6 +31,18 @@ const navItems = [
 export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname()
   const [expanded, setExpanded] = useState<string | null>(null)
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    if (!token) return
+    fetch("/api/admin/inquiries?read=unread&limit=1", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
+      .then((data) => setUnreadCount(data.total || 0))
+      .catch(() => {})
+  }, [pathname])
 
   const isActive = (href: string) => {
     if (href === "/admin") return pathname === "/admin"
@@ -98,6 +110,7 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
               </div>
             )
           }
+          const isInquiries = item.href === "/admin/inquiries"
           return (
             <Link
               key={item.href}
@@ -109,7 +122,12 @@ export function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
               )}
             >
               <item.icon className="w-4 h-4 shrink-0" />
-              {item.label}
+              <span className="flex-1">{item.label}</span>
+              {isInquiries && unreadCount > 0 && (
+                <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-gold text-[10px] font-bold text-dark-200 flex items-center justify-center">
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </span>
+              )}
             </Link>
           )
         })}
