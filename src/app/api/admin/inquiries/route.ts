@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getAdminFromRequest } from "@/lib/admin"
-import { featuredProperties } from "@/lib/data"
-import { featuredVehicles } from "@/lib/data"
+import { featuredProperties, featuredVehicles } from "@/lib/data"
 
 export async function GET(request: Request) {
   const admin = await getAdminFromRequest(request)
@@ -13,19 +12,45 @@ export async function GET(request: Request) {
   const limit = parseInt(searchParams.get("limit") || "20")
   const type = searchParams.get("type") || ""
   const read = searchParams.get("read") || ""
+  const status = searchParams.get("status") || ""
   const search = searchParams.get("search") || ""
 
-  const where: Record<string, unknown> = {}
+  const where: any = { type: { not: "" } }
   if (type) where.type = type
   if (read === "unread") where.isRead = false
   if (read === "read") where.isRead = true
+  if (status) where.status = status
+
   if (search) {
-    where.OR = [
+    const vehicleMatch = featuredVehicles
+      .filter(
+        (v) =>
+          v.title.toLowerCase().includes(search.toLowerCase()) ||
+          v.make.toLowerCase().includes(search.toLowerCase()) ||
+          v.model.toLowerCase().includes(search.toLowerCase())
+      )
+      .map((v) => v.slug)
+    const propertyMatch = featuredProperties
+      .filter(
+        (p) =>
+          p.title.toLowerCase().includes(search.toLowerCase()) ||
+          p.type.toLowerCase().includes(search.toLowerCase()) ||
+          p.location.toLowerCase().includes(search.toLowerCase())
+      )
+      .map((p) => p.slug)
+
+    const referenceIdFilter = [...new Set([...vehicleMatch, ...propertyMatch])]
+
+    const orClauses: any[] = [
       { name: { contains: search, mode: "insensitive" } },
       { email: { contains: search, mode: "insensitive" } },
       { phone: { contains: search, mode: "insensitive" } },
       { message: { contains: search, mode: "insensitive" } },
     ]
+    if (referenceIdFilter.length > 0) {
+      orClauses.push({ referenceId: { in: referenceIdFilter } })
+    }
+    where.OR = orClauses
   }
 
   const [items, total] = await Promise.all([
@@ -38,10 +63,10 @@ export async function GET(request: Request) {
 
   const enriched = items.map((inq) => {
     let listing = null
-    if (inq.type === "property" || inq.type === "property-enquiry") {
+    if (inq.type === "property") {
       listing = featuredProperties.find((p) => p.slug === inq.referenceId) || null
     }
-    if (inq.type === "vehicle" || inq.type === "vehicle-enquiry") {
+    if (inq.type === "vehicle") {
       listing = featuredVehicles.find((v) => v.slug === inq.referenceId) || null
     }
     return { ...inq, listing }

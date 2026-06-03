@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getAdminFromRequest } from "@/lib/admin"
+import { featuredProperties, featuredVehicles } from "@/lib/data"
 
 export async function GET(request: Request) {
   const admin = await getAdminFromRequest(request)
@@ -17,10 +18,23 @@ export async function GET(request: Request) {
       prisma.media.count(),
     ])
 
-  const pendingProperties = await prisma.property.count({ where: { isApproved: false } })
-  const pendingVehicles = await prisma.vehicle.count({ where: { isApproved: false } })
-  const featuredProperties = await prisma.property.count({ where: { isFeatured: true } })
-  const featuredVehicles = await prisma.vehicle.count({ where: { isFeatured: true } })
+  const [
+    pendingProperties, pendingVehicles,
+    featuredPropertiesCount, featuredVehiclesCount,
+    vehicleInquiries, propertyInquiries,
+    newInquiries, contactedInquiries, pendingInquiries, closedInquiries,
+  ] = await Promise.all([
+    prisma.property.count({ where: { isApproved: false } }),
+    prisma.vehicle.count({ where: { isApproved: false } }),
+    prisma.property.count({ where: { isFeatured: true } }),
+    prisma.vehicle.count({ where: { isFeatured: true } }),
+    prisma.inquiry.count({ where: { type: "vehicle" } }),
+    prisma.inquiry.count({ where: { type: "property" } }),
+    prisma.inquiry.count({ where: { status: "new" } }),
+    prisma.inquiry.count({ where: { status: "contacted" } }),
+    prisma.inquiry.count({ where: { status: "pending" } }),
+    prisma.inquiry.count({ where: { status: "closed" } }),
+  ])
 
   const recentProperties = await prisma.property.findMany({
     orderBy: { createdAt: "desc" },
@@ -40,18 +54,27 @@ export async function GET(request: Request) {
     select: { id: true, name: true, email: true, role: true, createdAt: true },
   })
 
-  const recentInquiries = await prisma.inquiry.findMany({
+  const recentInquiriesRaw = await prisma.inquiry.findMany({
     orderBy: { createdAt: "desc" },
     take: 5,
-    select: { id: true, name: true, email: true, message: true, isRead: true, type: true, createdAt: true },
+  })
+
+  const recentInquiries = recentInquiriesRaw.map((inq) => {
+    let listing = null
+    if (inq.type === "property") listing = featuredProperties.find((p) => p.slug === inq.referenceId) || null
+    if (inq.type === "vehicle") listing = featuredVehicles.find((v) => v.slug === inq.referenceId) || null
+    return { ...inq, listing }
   })
 
   return NextResponse.json({
     stats: {
       totalUsers, totalProperties, totalVehicles, totalInquiries, unreadInquiries, totalBlog, totalMedia,
-      pendingProperties, pendingVehicles, featuredProperties, featuredVehicles,
+      pendingProperties, pendingVehicles,
+      featuredProperties: featuredPropertiesCount, featuredVehicles: featuredVehiclesCount,
       totalListings: totalProperties + totalVehicles,
       pendingApprovals: pendingProperties + pendingVehicles,
+      vehicleInquiries, propertyInquiries,
+      newInquiries, contactedInquiries, pendingInquiries, closedInquiries,
     },
     recentProperties,
     recentVehicles,

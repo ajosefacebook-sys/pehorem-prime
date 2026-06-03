@@ -103,21 +103,23 @@ model Vehicle {
 }
 
 model Inquiry {
-  id          String    @id @default(uuid())
-  type        String
-  referenceId String
-  name        String
-  email       String
-  phone       String?
-  message     String
-  isRead      Boolean   @default(false)
-  userId      String?
-  user        User?     @relation(fields: [userId], references: [id])
-  property    Property? @relation("PropertyInquiries", fields: [propertyId], references: [id])
-  propertyId  String?
-  vehicle     Vehicle?  @relation("VehicleInquiries", fields: [vehicleId], references: [id])
-  vehicleId   String?
-  createdAt   DateTime  @default(now())
+  id              String    @id @default(uuid())
+  type            String
+  referenceId     String
+  name            String
+  email           String
+  phone           String?
+  message         String
+  isRead          Boolean   @default(false)
+  status          String    @default("new")
+  statusUpdatedAt DateTime?
+  userId          String?
+  user            User?     @relation(fields: [userId], references: [id])
+  property        Property? @relation("PropertyInquiries", fields: [propertyId], references: [id])
+  propertyId      String?
+  vehicle         Vehicle?  @relation("VehicleInquiries", fields: [vehicleId], references: [id])
+  vehicleId       String?
+  createdAt       DateTime  @default(now())
 }
 
 model AdCampaign {

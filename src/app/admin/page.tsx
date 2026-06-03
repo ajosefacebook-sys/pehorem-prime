@@ -5,7 +5,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import {
   Building2, Users, Car, MessageSquare, CheckCircle, Clock, TrendingUp,
-  DollarSign, FileText, Image, Shield, ArrowRight, ExternalLink
+  DollarSign, FileText, Image, Shield, ArrowRight, Home, Mail
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
@@ -18,11 +18,20 @@ interface DashboardData {
     totalInquiries: number; unreadInquiries: number; totalBlog: number; totalMedia: number
     pendingProperties: number; pendingVehicles: number; featuredProperties: number; featuredVehicles: number
     totalListings: number; pendingApprovals: number
+    vehicleInquiries: number; propertyInquiries: number
+    newInquiries: number; contactedInquiries: number; pendingInquiries: number; closedInquiries: number
   }
   recentProperties: any[]
   recentVehicles: any[]
   recentUsers: any[]
   recentInquiries: any[]
+}
+
+const STATUS_BADGE: Record<string, { label: string; color: string }> = {
+  new: { label: "New", color: "from-amber-500/20" },
+  contacted: { label: "Contacted", color: "from-blue-500/20" },
+  pending: { label: "Pending", color: "from-violet-500/20" },
+  closed: { label: "Closed", color: "from-gray-500/20" },
 }
 
 export default function AdminDashboard() {
@@ -57,8 +66,21 @@ export default function AdminDashboard() {
     { label: "Properties", value: stats?.totalProperties || 0, icon: Building2, change: `${stats?.featuredProperties || 0} featured`, color: "from-emerald-500/20" },
     { label: "Vehicles", value: stats?.totalVehicles || 0, icon: Car, change: `${stats?.featuredVehicles || 0} featured`, color: "from-amber-500/20" },
     { label: "Users", value: stats?.totalUsers || 0, icon: Users, change: "Registered users", color: "from-violet-500/20" },
-    { label: "Inquiries", value: stats?.totalInquiries || 0, icon: MessageSquare, change: `${stats?.unreadInquiries || 0} unread`, color: "from-rose-500/20" },
+    { label: "Total Inquiries", value: stats?.totalInquiries || 0, icon: MessageSquare, change: `${stats?.unreadInquiries || 0} unread`, color: "from-rose-500/20" },
     { label: "Blog Posts", value: stats?.totalBlog || 0, icon: FileText, change: "Published articles", color: "from-cyan-500/20" },
+  ]
+
+  const inquiryBreakdown = [
+    { label: "Vehicle", value: stats?.vehicleInquiries || 0, icon: Car, color: "from-amber-500/20" },
+    { label: "Property", value: stats?.propertyInquiries || 0, icon: Home, color: "from-emerald-500/20" },
+    { label: "Contact", value: Math.max(0, (stats?.totalInquiries || 0) - (stats?.vehicleInquiries || 0) - (stats?.propertyInquiries || 0)), icon: Mail, color: "from-blue-500/20" },
+  ]
+
+  const inquiryStatusCards = [
+    { label: "New", value: stats?.newInquiries || 0, icon: Clock, color: "from-amber-500/20" },
+    { label: "Contacted", value: stats?.contactedInquiries || 0, icon: MessageSquare, color: "from-blue-500/20" },
+    { label: "Pending", value: stats?.pendingInquiries || 0, icon: TrendingUp, color: "from-violet-500/20" },
+    { label: "Closed", value: stats?.closedInquiries || 0, icon: CheckCircle, color: "from-gray-500/20" },
   ]
 
   return (
@@ -94,6 +116,54 @@ export default function AdminDashboard() {
         })}
       </div>
 
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        {inquiryBreakdown.map((stat, i) => {
+          const Icon = stat.icon
+          return (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-white/5 relative overflow-hidden"
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} to-transparent opacity-20`} />
+              <div className="relative">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-gold/10 flex items-center justify-center mb-1.5 sm:mb-2">
+                  <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gold" />
+                </div>
+                <p className="text-base sm:text-xl font-bold text-white">{stat.value.toLocaleString()}</p>
+                <p className="text-[9px] sm:text-[11px] text-white/40">{stat.label} Inquiries</p>
+              </div>
+            </motion.div>
+          )
+        })}
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        {inquiryStatusCards.map((stat, i) => {
+          const Icon = stat.icon
+          return (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-white/5 relative overflow-hidden"
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} to-transparent opacity-20`} />
+              <div className="relative">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-gold/10 flex items-center justify-center mb-1.5 sm:mb-2">
+                  <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gold" />
+                </div>
+                <p className="text-base sm:text-xl font-bold text-white">{stat.value.toLocaleString()}</p>
+                <p className="text-[9px] sm:text-[11px] text-white/40">{stat.label}</p>
+              </div>
+            </motion.div>
+          )
+        })}
+      </div>
+
       <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
         <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           <Card hover={false}>
@@ -105,23 +175,38 @@ export default function AdminDashboard() {
                 </Link>
               </div>
               <div className="space-y-2">
-                {data?.recentInquiries?.length ? data.recentInquiries.slice(0, 4).map((inq: any) => (
-                  <div key={inq.id} className="flex items-center justify-between py-2.5 border-b border-white/5 last:border-0">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${inq.isRead ? "bg-white/5 text-white/30" : "bg-gold/20 text-gold"}`}>
-                        {inq.name?.charAt(0)}
+                {data?.recentInquiries?.length ? data.recentInquiries.slice(0, 4).map((inq: any) => {
+                  const listing = inq.listing
+                  const thumb = listing?.images?.[0]
+                  const isProperty = inq.type === "property"
+                  const isVehicle = inq.type === "vehicle"
+                  return (
+                    <div key={inq.id} className="flex items-center justify-between py-2.5 border-b border-white/5 last:border-0">
+                      <div className="flex items-center gap-3 min-w-0">
+                        {thumb ? (
+                          <img src={thumb} alt=""
+                            className="w-9 h-9 rounded-lg object-cover shrink-0 border border-white/5"
+                          />
+                        ) : (
+                          <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${inq.isRead ? "bg-white/5" : "bg-gold/20"}`}>
+                            {isVehicle ? <Car className="w-4 h-4 text-gold/60" /> : isProperty ? <Home className="w-4 h-4 text-gold/60" /> : <MessageSquare className="w-4 h-4 text-white/30" />}
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-sm text-white truncate">{listing?.title || inq.name}</p>
+                          <p className="text-xs text-white/40 truncate">
+                            {inq.name} &middot; {inq.type}
+                            {inq.status !== "new" && ` · ${inq.status}`}
+                          </p>
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-sm text-white truncate">{inq.name}</p>
-                        <p className="text-xs text-white/40 truncate">{inq.email} &middot; {inq.type}</p>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {inq.status === "new" && <span className="w-2 h-2 rounded-full bg-gold" />}
+                        <span className="text-[10px] text-white/30">{formatRelativeTime(inq.createdAt)}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      {!inq.isRead && <span className="w-2 h-2 rounded-full bg-gold" />}
-                      <span className="text-[10px] text-white/30">{formatRelativeTime(inq.createdAt)}</span>
-                    </div>
-                  </div>
-                )) : (
+                  )
+                }) : (
                   <p className="text-white/30 text-sm py-4 text-center">No inquiries yet</p>
                 )}
               </div>
@@ -182,6 +267,30 @@ export default function AdminDashboard() {
                     </Link>
                   )
                 })}
+              </div>
+            </div>
+          </Card>
+
+          <Card hover={false}>
+            <div className="p-4 sm:p-5">
+              <h2 className="text-sm sm:text-base font-display font-semibold text-white mb-4">Inquiry Status</h2>
+              <div className="space-y-3">
+                {[
+                  { label: "New", value: stats?.newInquiries || 0, color: "text-amber-400" },
+                  { label: "Contacted", value: stats?.contactedInquiries || 0, color: "text-blue-400" },
+                  { label: "Pending", value: stats?.pendingInquiries || 0, color: "text-violet-400" },
+                  { label: "Closed", value: stats?.closedInquiries || 0, color: "text-gray-400" },
+                ].map((item) => (
+                  <div key={item.label} className="flex items-center justify-between py-1.5">
+                    <span className="text-white/50 text-xs sm:text-sm">{item.label}</span>
+                    <span className={`font-semibold text-xs sm:text-sm ${item.color}`}>{item.value.toLocaleString()}</span>
+                  </div>
+                ))}
+                <div className="pt-2 border-t border-white/5">
+                  <Link href="/admin/inquiries" className="text-xs text-gold hover:text-gold-light flex items-center gap-1">
+                    Manage Inquiries <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
               </div>
             </div>
           </Card>
